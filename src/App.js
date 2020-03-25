@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import MarketPage from "./pages/MarketPage";
+import { UserProvider } from "./UserContext";
 
 import "./App.css";
 
@@ -62,25 +63,27 @@ class App extends React.Component {
     return !user ? (
       <Authenticator hide={[Greetings]} theme={theme} />
     ) : (
-      <Router>
-        <>
-          <Navbar
-            user={user.attributes.email}
-            handleSignOut={this.handleSignOut}
-          />
-          <div className="app-container">
-            <Route exact path="/" component={HomePage} />
-            <Route exact path="/profile" component={ProfilePage} />
-            <Route
-              exact
-              path="/markets/:marketId"
-              component={({ match }) => (
-                <MarketPage marketId={match.params.marketId} />
-              )}
+      <UserProvider value={{ user }}>
+        <Router>
+          <>
+            <Navbar
+              user={user.attributes.email}
+              handleSignOut={this.handleSignOut}
             />
-          </div>
-        </>
-      </Router>
+            <div className="app-container">
+              <Route exact path="/" component={HomePage} />
+              <Route exact path="/profile" component={ProfilePage} />
+              <Route
+                exact
+                path="/markets/:marketId"
+                component={({ match }) => (
+                  <MarketPage marketId={match.params.marketId} />
+                )}
+              />
+            </div>
+          </>
+        </Router>
+      </UserProvider>
     );
   }
 }
@@ -100,7 +103,5 @@ const theme = {
     backgroundColor: "var(--squidInk)",
   },
 };
-
-// export default withAuthenticator(App, true, [], null, theme);
 
 export default App;
