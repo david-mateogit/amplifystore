@@ -1,4 +1,5 @@
 import React from "react";
+
 // prettier-ignore
 import { Form, Button, Dialog, Input, Select, Notification } from "element-react"
 import { API, graphqlOperation } from "aws-amplify";
@@ -23,13 +24,13 @@ class NewMarket extends React.Component {
         name: this.state.name,
         tags: this.state.selectedTags,
         owner: user.username,
+        createdAt: Date.now(),
       };
       const result = await API.graphql(
         graphqlOperation(createMarket, { input })
       );
       console.info(`Created market: id ${result.data.createMarket.id}`);
-      this.setState({ name: "" });
-      this.setState({ selectedTags: [] });
+      this.setState({ name: "", selectedTags: [] });
     } catch (err) {
       console.error("Error add new market", err);
       Notification.error({
@@ -62,8 +63,30 @@ class NewMarket extends React.Component {
                   onClick={() => this.setState({ addMarketDialog: true })}
                 />
               </h1>
-            </div>
+              <Form inline onSubmit={this.props.handleSearch}>
+                <Form.Item>
+                  <Input
+                    value={this.props.searchTerm}
+                    placeholder="Search Markets..."
+                    icon="circle-cross"
+                    onChange={this.props.handleSearchChange}
+                    onIconClick={this.props.handleClearSearch}
+                  />
+                </Form.Item>
 
+                <Form.Item>
+                  <Button
+                    nativeType="submit"
+                    type="info"
+                    icon="search"
+                    onClick={this.props.handleSearch}
+                    loading={this.props.isSearching}
+                  >
+                    Search
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
             <Dialog
               title="Create New Market"
               visible={this.state.addMarketDialog}

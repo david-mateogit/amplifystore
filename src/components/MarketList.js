@@ -7,7 +7,7 @@ import { listMarkets } from "../graphql/queries";
 import { onCreateMarket } from "../graphql/subscriptions";
 import Error from "./Error";
 
-const MarketList = () => {
+const MarketList = ({ searchResults }) => {
   const onNewMarket = (prevQuery, newData) => {
     const updatedQuery = { ...prevQuery };
     const updatedMarketList = [
@@ -28,17 +28,28 @@ const MarketList = () => {
         if (errors.length > 0) return <Error errors={errors} />;
         if (loading || !data.listMarkets) return <Loading fullscreen />;
 
+        const markets =
+          searchResults.length > 0 ? searchResults : data.listMarkets.items;
+        console.log(markets);
         return (
           <>
-            <h2 className="header">
-              <img
-                src="https://icon.now.sh/store_mall_directory/527FFF"
-                alt="Store Icon"
-                className="large-icon"
-              />
-              Markets
-            </h2>
-            {data.listMarkets.items.map((market) => (
+            {searchResults.length > 0 ? (
+              <h2 className="text-green">
+                <Icon className="icon" type="success" name="check" />
+                {searchResults.length}
+                {`Result${searchResults.length > 1 ? "s" : ""}`}
+              </h2>
+            ) : (
+              <h2 className="header">
+                <img
+                  src="https://icon.now.sh/store_mall_directory/527FFF"
+                  alt="Store Icon"
+                  className="large-icon"
+                />
+                Markets
+              </h2>
+            )}
+            {markets.map((market) => (
               <div className="my-2" key={market.id}>
                 <Card
                   bodyStyle={{
